@@ -1,9 +1,18 @@
 services:
-  - type: web
-    name: Axis Proxy
-    runtime: docker
-    plan: starter # Change to 'starter' if you need more RAM/uptime
-    region: oregon # or frankfurt, singapore, etc.
-    envVars:
-      - key: NODE_ENV
-        value: production
+  - type: static
+    name: axis-v4
+    env: static
+    buildCommand: echo "No build required"
+    staticPublishPath: .
+    headers:
+      - path: /sw.js
+        values:
+          Cache-Control: no-store, no-cache, must-revalidate
+          Service-Worker-Allowed: "/"
+      - path: /bareworker.js
+        values:
+          Cache-Control: public, max-age=3600
+      - path: /*
+        values:
+          X-Frame-Options: DENY
+          X-Content-Type-Options: nosniff
