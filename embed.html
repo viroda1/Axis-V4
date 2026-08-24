@@ -80,8 +80,7 @@ async function init(){
   if(!target){showError('No URL supplied.');return}
   if(!validUrl(target)){showError('Invalid URL.');return}
   try{
-    els.url.textContent=target;
-    await regSW();
+    els.url.textContent=target;await regSW();
     const[sj]=await Promise.all([initSJ(),initConn()]);
     els.title.textContent='Loading Site';
     const frame=sj.createFrame();frame.frame.id='embed-frame';els.container.appendChild(frame.frame);
