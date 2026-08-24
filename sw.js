@@ -13,44 +13,35 @@ const ADBLOCK = {
         "scorecardresearch.com","quantserve.com","krxd.net","demdex.net"
     ]
 };
-
 function isAdBlocked(url) {
     const s = url.toString();
     for (const p of ADBLOCK.blocked) {
-        const re = new RegExp('^' + p.replace(/\*/g,'.*').replace(/\./g,'\\.').replace(/\?/g,'\\?') + '$', 'i');
+        const re = new RegExp('^' + p.replace(/\*/g, '.*').replace(/\./g, '\\.').replace(/\?/g, '\\?') + '$', 'i');
         if (re.test(s)) return true;
     }
     return false;
 }
-
 const swPath = self.location.pathname;
 const basePath = swPath.substring(0, swPath.lastIndexOf('/') + 1);
 self.basePath = self.basePath || basePath;
-
 self.$scramjet = {
     files: {
         wasm: "https://cdn.jsdelivr.net/gh/Destroyed12121/Staticsj@main/JS/scramjet.wasm.wasm",
-        sync: "https://cdn.jsdelivr.net/gh/Destroyed12121/Staticsj@main/JS/scramjet.sync.js",
+        sync: "https://cdn.jsdelivr.net/gh/Destroyed12121/Staticsj@main/JS/scramjet.sync.js"
     }
 };
-
 importScripts("https://cdn.jsdelivr.net/gh/Destroyed12121/Staticsj@main/JS/scramjet.all.js");
 importScripts("https://cdn.jsdelivr.net/npm/@mercuryworkshop/bare-mux/dist/index.js");
-
 const { ScramjetServiceWorker } = $scramjetLoadWorker();
 const scramjet = new ScramjetServiceWorker({ prefix: basePath + "scramjet/" });
-
 self.addEventListener('install', e => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
-
 let wispConfig = { wispurl: null, servers: [], autoswitch: true };
 let serverHealth = new Map();
 let currentServerStartTime = null;
 const MAX_FAIL = 2, PING_TIMEOUT = 3000;
-
 let resolveConfigReady;
 const configReady = new Promise(r => resolveConfigReady = r);
-
 async function pingServer(url) {
     return new Promise(resolve => {
         const start = Date.now();
@@ -62,24 +53,19 @@ async function pingServer(url) {
         } catch { resolve({ url, success: false, latency: null }); }
     });
 }
-
 function updateHealth(url, ok) {
     const h = serverHealth.get(url) || { fails: 0, ok: 0, lastOk: 0 };
     if (ok) { h.fails = 0; h.ok++; h.lastOk = Date.now(); } else { h.fails++; }
-    serverHealth.set(url, h);
-    return h;
+    serverHealth.set(url, h); return h;
 }
-
 function switchTo(url, lat) {
     if (url === wispConfig.wispurl) return;
-    wispConfig.wispurl = url;
-    currentServerStartTime = Date.now();
+    wispConfig.wispurl = url; currentServerStartTime = Date.now();
     self.clients.matchAll().then(cl => cl.forEach(c => c.postMessage({
         type: 'wispChanged', url, name: wispConfig.servers.find(s => s.url === url)?.name || 'Unknown', latency: lat
     })));
     if (scramjet && scramjet.client) scramjet.client = null;
 }
-
 async function proactiveCheck() {
     if (!wispConfig.autoswitch || !wispConfig.servers?.length) return;
     const results = await Promise.all(wispConfig.servers.map(s => pingServer(s.url)));
@@ -90,7 +76,6 @@ async function proactiveCheck() {
         if (best) switchTo(best.url, best.latency);
     }
 }
-
 self.addEventListener("message", ({ data }) => {
     if (data.type === "config") {
         if (data.wispurl) { wispConfig.wispurl = data.wispurl; currentServerStartTime = Date.now(); }
@@ -101,7 +86,6 @@ self.addEventListener("message", ({ data }) => {
         pingServer(wispConfig.wispurl).then(r => self.clients.matchAll().then(cl => cl.forEach(c => c.postMessage({ type: 'pingResult', ...r }))));
     }
 });
-
 self.addEventListener("fetch", event => {
     event.respondWith((async () => {
         if (isAdBlocked(event.request.url)) return new Response(new ArrayBuffer(0), { status: 204 });
@@ -110,7 +94,6 @@ self.addEventListener("fetch", event => {
         return fetch(event.request);
     })());
 });
-
 scramjet.addEventListener("request", async e => {
     e.response = (async () => {
         await configReady;
@@ -126,7 +109,7 @@ scramjet.addEventListener("request", async e => {
                 return await scramjet.client.fetch(e.url, {
                     method: e.method, body: e.body, headers: e.requestHeaders,
                     credentials: "include", mode: e.mode === "cors" ? e.mode : "same-origin",
-                    cache: e.cache, redirect: "manual", duplex: "half",
+                    cache: e.cache, redirect: "manual", duplex: "half"
                 });
             } catch (err) {
                 lastErr = err;
