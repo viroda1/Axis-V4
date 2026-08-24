@@ -16,6 +16,8 @@
 <script src="script.js" defer></script>
 </head>
 <body>
+<video id="theme-video" autoplay muted loop playsinline></video>
+<div id="theme-overlay"></div>
 <div id="app">
   <div class="tabs" id="tabs"></div>
   <div class="nav" id="nav">
@@ -23,7 +25,7 @@
     <button id="forward-btn" title="Forward" disabled><i class="fa-solid fa-chevron-right"></i></button>
     <button id="refresh-btn" title="Refresh"><i class="fa-solid fa-rotate-right"></i></button>
     <div class="address-wrapper">
-      <span class="address-icon" id="address-icon"><i class="fa-solid fa-globe"></i></span>
+      <span class="address-icon" id="address-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
       <input class="bar" id="address-bar" type="text" placeholder="Search or enter URL" autocomplete="off" spellcheck="false">
       <button id="home-btn-nav" title="Home"><i class="fa-solid fa-house"></i></button>
     </div>
@@ -32,21 +34,16 @@
   <div class="loading-bar-container"><div class="loading-bar" id="loading-bar"></div></div>
   <div class="iframe-container" id="iframe-container"></div>
 </div>
-
 <div class="modal-overlay hidden" id="settings-modal">
   <div class="modal-card">
     <div class="modal-header">
-      <h2>
-        <svg class="modal-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 6 L20 6 L12 12 Z"/><path d="M4 18 L20 18 L12 12 Z"/></svg>
-        Axis V4
-      </h2>
+      <h2><svg class="modal-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 6 L20 6 L12 12 Z"/><path d="M4 18 L20 18 L12 12 Z"/></svg> Axis V4</h2>
       <button class="close-btn" id="close-settings"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body" id="settings-body"></div>
     <div class="modal-footer">Axis V4 &middot; Built for speed</div>
   </div>
 </div>
-
 <div class="modal-overlay hidden" id="redeem-modal">
   <div class="modal-card redeem-card">
     <div class="modal-header">
